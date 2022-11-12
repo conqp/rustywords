@@ -75,12 +75,7 @@ pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
         .map(|(chr, _)| chr)
         .collect();
 
-    let unprocessed_letters: Vec<&mut CheckedLetter> = positions
-        .iter_mut()
-        .filter(|position| !position.checked())
-        .collect();
-
-    for unprocessed_letter in unprocessed_letters {
+    for unprocessed_letter in positions.iter_mut().filter(|position| !position.checked()) {
         match leftover_letters
             .iter()
             .position(|chr| *chr == unprocessed_letter.letter())
