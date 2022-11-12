@@ -1,6 +1,4 @@
-mod lib;
-
-use crate::lib::{compare, get_random_word, print_result, Position};
+use rustywords::{compare, get_random_word, print_result, Position};
 use std::io::{stdin, stdout, Write};
 
 const MAX_TRIES: u8 = 6;
@@ -8,7 +6,7 @@ const MAX_TRIES: u8 = 6;
 fn main() {
     match get_random_word() {
         Ok(word) => guess(word),
-        Err(msg) => eprintln!("{}", msg)
+        Err(msg) => eprintln!("{}", msg),
     }
 }
 
