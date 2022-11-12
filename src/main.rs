@@ -4,17 +4,20 @@ use crate::lib::{compare, print_result, Position};
 use std::io::{stdin, stdout, Write};
 
 const MAX_TRIES: u8 = 6;
+const TARGET_WORD: &str = "WEARY";
 
 fn main() {
     let mut tries_left: u8 = MAX_TRIES;
-    let target = "WEARY";
 
     while tries_left > 0 {
-        let word: [char; 5] = read_word();
-
+        let word = read_word();
         let result = compare(
             word,
-            target.chars().collect::<Vec<char>>().try_into().unwrap(),
+            TARGET_WORD
+                .chars()
+                .collect::<Vec<char>>()
+                .try_into()
+                .unwrap(),
         );
         print_result(&result, true);
 

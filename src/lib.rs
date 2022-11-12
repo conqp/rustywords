@@ -1,9 +1,14 @@
 use std::fmt::{Display, Formatter};
 
+const BOLD: &str = "\x1b[1m";
+const DIM: &str = "\x1b[2m";
+const ITALIC: &str = "\x1b[3m";
+const RESET: &str = "\x1b[0m";
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum Position {
     Correct,
-    Wrong,
+    WrongPosition,
     NotInWord,
 }
 
@@ -45,9 +50,9 @@ impl Display for CheckedLetter {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self.position() {
             Some(position) => match position {
-                Position::Correct => write!(f, "\x1b[1m{}\x1b[0m", self.letter()),
-                Position::Wrong => write!(f, "\x1b[3m{}\x1b[0m", self.letter()),
-                Position::NotInWord => write!(f, "\x1b[2m{}\x1b[0m", self.letter()),
+                Position::Correct => write!(f, "{}{}{}", BOLD, self.letter(), RESET),
+                Position::WrongPosition => write!(f, "{}{}{}", ITALIC, self.letter(), RESET),
+                Position::NotInWord => write!(f, "{}{}{}", DIM, self.letter(), RESET),
             },
             None => write!(f, "{}", self.letter()),
         }
@@ -55,13 +60,7 @@ impl Display for CheckedLetter {
 }
 
 pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
-    let mut positions: [CheckedLetter; 5] = [
-        CheckedLetter::new(input[0]),
-        CheckedLetter::new(input[1]),
-        CheckedLetter::new(input[2]),
-        CheckedLetter::new(input[3]),
-        CheckedLetter::new(input[4]),
-    ];
+    let mut positions: [CheckedLetter; 5] = input.map(CheckedLetter::new);
 
     for (index, positioned_letter) in positions.iter_mut().enumerate() {
         if positioned_letter.letter() == target[index] {
@@ -92,7 +91,7 @@ pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
                 .position(|chr| *chr == unprocessed_letter.letter())
             {
                 Some(index) => {
-                    unprocessed_letter.set_position(Position::Wrong);
+                    unprocessed_letter.set_position(Position::WrongPosition);
                     leftover_letters.remove(index);
                     break;
                 }
@@ -108,8 +107,8 @@ pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
 }
 
 pub fn print_result(result: &[CheckedLetter], newline: bool) {
-    for positioned_letter in result {
-        print!("{}", positioned_letter);
+    for letter in result {
+        print!("{}", letter);
     }
 
     if newline {
