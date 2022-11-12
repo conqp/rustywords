@@ -4,8 +4,8 @@ use std::fmt::{Display, Formatter};
 use std::fs::File;
 use std::io::{stdin, stdout, BufRead, BufReader, Write};
 
-const MAX_TRIES: u8 = 6;
 const WORD_SIZE: usize = 5;
+const MAX_TRIES: u8 = 6;
 const WORDS_FILE: &str = "./words.txt";
 const BOLD: &str = "\x1b[1m";
 const DIM: &str = "\x1b[2m";
