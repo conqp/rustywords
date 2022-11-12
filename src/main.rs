@@ -8,9 +8,7 @@ const MAX_TRIES: u8 = 6;
 fn main() {
     match get_random_word() {
         Ok(word) => guess(word),
-        Err(msg) => {
-            eprintln!("{}", msg);
-        }
+        Err(msg) => eprintln!("{}", msg)
     }
 }
 
