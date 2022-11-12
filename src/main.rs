@@ -57,6 +57,10 @@ fn read_word() -> [char; 5] {
             .map(|chr| chr.to_ascii_uppercase())
             .collect();
 
+        if !trimmed.chars().all(|chr| chr.is_alphabetic()) {
+            continue;
+        }
+
         if trimmed.len() == 5 {
             break;
         }
