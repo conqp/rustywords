@@ -1,24 +1,25 @@
 mod lib;
 
-use crate::lib::{compare, print_result, Position};
+use crate::lib::{compare, get_random_word, print_result, Position};
 use std::io::{stdin, stdout, Write};
 
 const MAX_TRIES: u8 = 6;
-const TARGET_WORD: &str = "WEEPY";
 
 fn main() {
+    match get_random_word() {
+        Ok(word) => guess(word),
+        Err(msg) => {
+            eprintln!("{}", msg);
+        }
+    }
+}
+
+fn guess(word: [char; 5]) {
     let mut tries_left: u8 = MAX_TRIES;
 
     while tries_left > 0 {
-        let word = read_word();
-        let result = compare(
-            word,
-            TARGET_WORD
-                .chars()
-                .collect::<Vec<char>>()
-                .try_into()
-                .unwrap(),
-        );
+        let guess = read_word();
+        let result = compare(guess, word);
         print_result(&result, true);
 
         if result
