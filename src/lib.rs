@@ -35,10 +35,7 @@ impl CheckedLetter {
     }
 
     pub fn checked(&self) -> bool {
-        match self.position {
-            Some(_) => true,
-            None => false,
-        }
+        self.position.is_some()
     }
 
     pub fn set_position(&mut self, position: Position) {
