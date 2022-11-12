@@ -9,6 +9,7 @@ const DIM: &str = "\x1b[2m";
 const ITALIC: &str = "\x1b[3m";
 const RESET: &str = "\x1b[0m";
 const WORDS_FILE: &str = "./words.txt";
+
 pub const WORD_SIZE: usize = 5;
 
 pub type Word = [char; WORD_SIZE];
