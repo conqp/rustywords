@@ -62,9 +62,9 @@ impl Display for CheckedLetter {
 pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
     let mut positions: [CheckedLetter; 5] = input.map(CheckedLetter::new);
 
-    for (index, positioned_letter) in positions.iter_mut().enumerate() {
-        if positioned_letter.letter() == target[index] {
-            positioned_letter.set_position(Position::Correct);
+    for (checked_letter, chr) in positions.iter_mut().zip(target) {
+        if checked_letter.letter() == chr {
+            checked_letter.set_position(Position::Correct);
         }
     }
 
