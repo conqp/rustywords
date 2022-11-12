@@ -2,20 +2,20 @@ use rand::seq::SliceRandom;
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{stdin, stdout, BufRead, BufReader, Write};
 
+const MAX_TRIES: u8 = 6;
+const WORD_SIZE: usize = 5;
+const WORDS_FILE: &str = "./words.txt";
 const BOLD: &str = "\x1b[1m";
 const DIM: &str = "\x1b[2m";
 const ITALIC: &str = "\x1b[3m";
 const RESET: &str = "\x1b[0m";
-const WORDS_FILE: &str = "./words.txt";
-
-pub const WORD_SIZE: usize = 5;
 
 pub type Word = [char; WORD_SIZE];
 pub type CheckedWord = [CheckedLetter; WORD_SIZE];
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Position {
     Correct,
     Wrong,
@@ -62,6 +62,66 @@ impl Display for CheckedLetter {
                 Position::NotInWord => write!(f, "{}{}{}", DIM, self.letter(), RESET),
             },
             None => write!(f, "{}", self.letter()),
+        }
+    }
+}
+
+pub trait Solvable {
+    fn solved(&self) -> bool;
+}
+
+impl Solvable for CheckedWord {
+    fn solved(&self) -> bool {
+        self.iter()
+            .all(|word| word.position().unwrap_or(Position::Wrong) == Position::Correct)
+    }
+}
+
+pub trait WordParser: Sized {
+    fn from_str(s: &str) -> Result<Self, String> {
+        Self::from_trimmed_str(s.trim())
+    }
+
+    fn from_trimmed_str(s: &str) -> Result<Self, String>;
+    fn read() -> Self;
+}
+
+impl WordParser for Word {
+    fn from_trimmed_str(s: &str) -> Result<Self, String> {
+        if !s.chars().all(|chr| chr.is_alphabetic()) {
+            Err(format!("Not a word: {}", s))
+        } else if s.len() != WORD_SIZE {
+            Err(format!("Word must be of size: {}", WORD_SIZE))
+        } else {
+            Ok(s.chars()
+                .map(|chr| chr.to_ascii_uppercase())
+                .collect::<Vec<char>>()
+                .try_into()
+                .unwrap())
+        }
+    }
+
+    fn read() -> Self {
+        loop {
+            print!("Enter a {}-letter word: ", WORD_SIZE);
+            stdout().flush().expect("Cannot flush STDOUT.");
+            let mut word = String::new();
+
+            match stdin().read_line(&mut word) {
+                Ok(_) => (),
+                Err(_) => {
+                    continue;
+                }
+            };
+
+            match Self::from_str(word.as_str()) {
+                Ok(word) => {
+                    return word;
+                }
+                Err(msg) => {
+                    eprintln!("{}", msg);
+                }
+            }
         }
     }
 }
@@ -117,6 +177,26 @@ pub fn get_random_word() -> Result<Word, &'static str> {
         Some(string) => Ok(string.chars().collect::<Vec<char>>().try_into().unwrap()),
         None => Err("No word found."),
     }
+}
+
+pub fn guess(word: Word) {
+    let mut tries_left: u8 = MAX_TRIES;
+
+    while tries_left > 0 {
+        let guess = Word::read();
+        let result = compare(guess, word);
+        print_result(&result, true);
+
+        if result.solved() {
+            println!("Congrats, you won!");
+            return;
+        }
+
+        tries_left -= 1;
+        println!("Tries left: {}", tries_left);
+    }
+
+    println!("You lost!");
 }
 
 fn read_words(filename: &str) -> Result<HashSet<String>, &'static str> {
