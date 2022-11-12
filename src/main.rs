@@ -1,4 +1,4 @@
-use rustywords::{compare, get_random_word, print_result, Position};
+use rustywords::{compare, get_random_word, print_result, Position, Word, WORD_SIZE};
 use std::io::{stdin, stdout, Write};
 
 const MAX_TRIES: u8 = 6;
@@ -10,7 +10,7 @@ fn main() {
     }
 }
 
-fn guess(word: [char; 5]) {
+fn guess(word: Word) {
     let mut tries_left: u8 = MAX_TRIES;
 
     while tries_left > 0 {
@@ -33,11 +33,11 @@ fn guess(word: [char; 5]) {
     println!("You lost!");
 }
 
-fn read_word() -> [char; 5] {
+fn read_word() -> Word {
     let mut trimmed: String;
 
     loop {
-        print!("Enter a 5-letter word: ");
+        print!("Enter a {}-letter word: ", WORD_SIZE);
         stdout().flush().expect("Cannot flush STDOUT.");
         let mut word = String::new();
 
@@ -58,7 +58,7 @@ fn read_word() -> [char; 5] {
             continue;
         }
 
-        if trimmed.len() == 5 {
+        if trimmed.len() == WORD_SIZE {
             break;
         }
     }

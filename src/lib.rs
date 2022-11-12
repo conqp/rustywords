@@ -9,6 +9,10 @@ const DIM: &str = "\x1b[2m";
 const ITALIC: &str = "\x1b[3m";
 const RESET: &str = "\x1b[0m";
 const WORDS_FILE: &str = "./words.txt";
+pub const WORD_SIZE: usize = 5;
+
+pub type Word = [char; WORD_SIZE];
+pub type CheckedWord = [CheckedLetter; WORD_SIZE];
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Position {
@@ -61,8 +65,8 @@ impl Display for CheckedLetter {
     }
 }
 
-pub fn compare(guess: [char; 5], word: [char; 5]) -> [CheckedLetter; 5] {
-    let mut positions: [CheckedLetter; 5] = guess.map(CheckedLetter::new);
+pub fn compare(guess: Word, word: Word) -> CheckedWord {
+    let mut positions: CheckedWord = guess.map(CheckedLetter::new);
 
     for (checked_letter, chr) in positions.iter_mut().zip(word) {
         if checked_letter.letter() == chr {
@@ -105,7 +109,7 @@ pub fn print_result(result: &[CheckedLetter], newline: bool) {
     }
 }
 
-pub fn get_random_word() -> Result<[char; 5], &'static str> {
+pub fn get_random_word() -> Result<Word, &'static str> {
     let words: Vec<String> = read_words(WORDS_FILE)?.into_iter().collect();
 
     match words.choose(&mut rand::thread_rng()) {
@@ -120,7 +124,7 @@ fn read_words(filename: &str) -> Result<HashSet<String>, &'static str> {
             .lines()
             .filter(|line| line.is_ok())
             .map(|line| line.unwrap().to_ascii_uppercase())
-            .filter(|line| line.chars().all(|chr| chr.is_alphabetic()) && line.len() == 5)
+            .filter(|line| line.chars().all(|chr| chr.is_alphabetic()) && line.len() == WORD_SIZE)
             .collect()),
         Err(_) => Err("Could not read words file."),
     }
