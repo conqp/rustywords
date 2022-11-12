@@ -36,8 +36,8 @@ impl CheckedLetter {
 
     pub fn checked(&self) -> bool {
         match self.position {
-            None => false,
             Some(_) => true,
+            None => false,
         }
     }
 
