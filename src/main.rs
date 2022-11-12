@@ -4,7 +4,7 @@ use crate::lib::{compare, print_result, Position};
 use std::io::{stdin, stdout, Write};
 
 const MAX_TRIES: u8 = 6;
-const TARGET_WORD: &str = "WEARY";
+const TARGET_WORD: &str = "WEEPY";
 
 fn main() {
     let mut tries_left: u8 = MAX_TRIES;
