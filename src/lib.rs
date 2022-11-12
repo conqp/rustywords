@@ -75,30 +75,22 @@ pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
         .map(|(chr, _)| chr)
         .collect();
 
-    loop {
-        let unprocessed_letters: Vec<&mut CheckedLetter> = positions
-            .iter_mut()
-            .filter(|position| !position.checked())
-            .collect();
+    let unprocessed_letters: Vec<&mut CheckedLetter> = positions
+        .iter_mut()
+        .filter(|position| !position.checked())
+        .collect();
 
-        if unprocessed_letters.is_empty() {
-            break;
-        }
-
-        for unprocessed_letter in unprocessed_letters {
-            match leftover_letters
-                .iter()
-                .position(|chr| *chr == unprocessed_letter.letter())
-            {
-                Some(index) => {
-                    unprocessed_letter.set_position(Position::WrongPosition);
-                    leftover_letters.remove(index);
-                    break;
-                }
-                None => {
-                    unprocessed_letter.set_position(Position::NotInWord);
-                    continue;
-                }
+    for unprocessed_letter in unprocessed_letters {
+        match leftover_letters
+            .iter()
+            .position(|chr| *chr == unprocessed_letter.letter())
+        {
+            Some(index) => {
+                unprocessed_letter.set_position(Position::WrongPosition);
+                leftover_letters.remove(index);
+            }
+            None => {
+                unprocessed_letter.set_position(Position::NotInWord);
             }
         }
     }
