@@ -8,7 +8,7 @@ const RESET: &str = "\x1b[0m";
 #[derive(Debug, Eq, PartialEq)]
 pub enum Position {
     Correct,
-    WrongPosition,
+    Wrong,
     NotInWord,
 }
 
@@ -51,7 +51,7 @@ impl Display for CheckedLetter {
         match self.position() {
             Some(position) => match position {
                 Position::Correct => write!(f, "{}{}{}", BOLD, self.letter(), RESET),
-                Position::WrongPosition => write!(f, "{}{}{}", ITALIC, self.letter(), RESET),
+                Position::Wrong => write!(f, "{}{}{}", ITALIC, self.letter(), RESET),
                 Position::NotInWord => write!(f, "{}{}{}", DIM, self.letter(), RESET),
             },
             None => write!(f, "{}", self.letter()),
@@ -81,7 +81,7 @@ pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
             .position(|chr| *chr == unprocessed_letter.letter())
         {
             Some(index) => {
-                unprocessed_letter.set_position(Position::WrongPosition);
+                unprocessed_letter.set_position(Position::Wrong);
                 leftover_letters.remove(index);
             }
             None => {
