@@ -61,16 +61,16 @@ impl Display for CheckedLetter {
     }
 }
 
-pub fn compare(input: [char; 5], target: [char; 5]) -> [CheckedLetter; 5] {
-    let mut positions: [CheckedLetter; 5] = input.map(CheckedLetter::new);
+pub fn compare(guess: [char; 5], word: [char; 5]) -> [CheckedLetter; 5] {
+    let mut positions: [CheckedLetter; 5] = guess.map(CheckedLetter::new);
 
-    for (checked_letter, chr) in positions.iter_mut().zip(target) {
+    for (checked_letter, chr) in positions.iter_mut().zip(word) {
         if checked_letter.letter() == chr {
             checked_letter.set_position(Position::Correct);
         }
     }
 
-    let mut leftover_letters: Vec<char> = target
+    let mut leftover_letters: Vec<char> = word
         .into_iter()
         .zip(positions.iter())
         .filter(|(_, pos)| !pos.checked())
