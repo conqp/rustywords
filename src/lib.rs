@@ -69,7 +69,7 @@ impl Display for CheckedLetter {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Word {
     letters: Letters,
 }
@@ -223,10 +223,10 @@ pub fn compare(guess: Word, word: Word) -> CheckedWord {
 }
 
 pub fn get_random_word() -> Result<Word, String> {
-    let words: Vec<String> = read_words(WORDS_FILE)?.into_iter().collect();
+    let words: Vec<Word> = read_words(WORDS_FILE)?.into_iter().collect();
 
     match words.choose(&mut rand::thread_rng()) {
-        Some(string) => Word::from_str(string.as_str()),
+        Some(word) => Ok(*word),
         None => Err("No word found.".to_string()),
     }
 }
@@ -251,13 +251,14 @@ pub fn guess(word: Word) {
     println!("You lost!");
 }
 
-fn read_words(filename: &str) -> Result<HashSet<String>, &'static str> {
+fn read_words(filename: &str) -> Result<HashSet<Word>, &'static str> {
     match File::open(filename) {
         Ok(file) => Ok(BufReader::new(file)
             .lines()
             .filter(|line| line.is_ok())
-            .map(|line| line.unwrap().to_ascii_uppercase())
-            .filter(|line| line.chars().all(|chr| chr.is_alphabetic()) && line.len() == WORD_SIZE)
+            .map(|line| Word::from_str(&line.unwrap()))
+            .filter(|word| word.is_ok())
+            .map(|word| word.unwrap())
             .collect()),
         Err(_) => Err("Could not read words file."),
     }
